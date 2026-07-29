@@ -7,3 +7,5 @@ pydantic
 python-dotenv
 requests
 tavily-python
+streamlit
+langchain-ollama
