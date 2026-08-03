@@ -56,6 +56,12 @@ DESTINATION_THEME = {
     "desert": ("#b45309", "#f59e0b", "🏜"),
 }
 
+GENERIC_TRAVEL_TIPS = [
+    ("✈️", "Book flights on Tuesday", "Mid-week fares tend to run lower than weekend bookings."),
+    ("🎒", "Pack light, travel smart", "Versatile layers and a capsule wardrobe make transit far easier."),
+    ("🍽️", "Explore local cuisine", "Street food and neighborhood spots often beat tourist-trap menus."),
+]
+
 
 # --------------------------------------------------------------------------
 # Styling
@@ -70,12 +76,12 @@ def inject_css() -> None:
             #MainMenu, footer { visibility: hidden; }
 
             .stApp {
-                background: radial-gradient(circle at 15% 0%, #eef4ff 0%, #f9fbff 35%, #ffffff 65%);
+                background: #f6f8fc;
             }
 
             .block-container {
                 max-width: 1440px;
-                padding-top: 1.4rem;
+                padding-top: 1.1rem;
                 padding-bottom: 3rem;
             }
 
@@ -83,50 +89,149 @@ def inject_css() -> None:
                 font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
             }
 
-            /* ---------- Hero ---------- */
-            .hero-shell {
-                background: linear-gradient(135deg, #1c3ca2 0%, #3b6ff2 55%, #5b8bff 100%);
-                border-radius: 28px;
-                padding: 2rem 2.2rem;
-                margin-bottom: 1.4rem;
-                color: white;
-                box-shadow: 0 25px 60px rgba(26, 66, 168, 0.22);
-                position: relative;
-                overflow: hidden;
-            }
+            /* ---------- App shell layout ---------- */
+            .app-shell { display: flex; gap: 0; }
 
-            .hero-shell::before, .hero-shell::after {
-                content: "";
-                position: absolute;
-                border-radius: 50%;
-                filter: blur(18px);
-                opacity: 0.35;
+            /* ---------- Sidebar ---------- */
+            .app-sidebar {
+                background: linear-gradient(180deg, #0f1330 0%, #12172f 100%);
+                border-radius: 22px;
+                padding: 1.3rem 1.1rem;
+                color: #e2e8f0;
+                height: 100%;
+                box-shadow: 0 20px 45px rgba(15, 15, 35, 0.18);
             }
-            .hero-shell::before { width: 240px; height: 240px; background: rgba(255,255,255,0.2); top: -90px; right: -50px; }
-            .hero-shell::after { width: 200px; height: 200px; background: rgba(255,255,255,0.14); bottom: -80px; left: -40px; }
-
-            .hero-shell h1 {
-                font-size: 2.1rem;
-                margin: 0 0 0.4rem 0;
-                font-weight: 800;
-                letter-spacing: -0.03em;
+            .sb-logo {
+                display: flex;
+                align-items: center;
+                gap: 0.7rem;
+                padding-bottom: 1.1rem;
+                margin-bottom: 1rem;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
             }
-            .hero-shell p { font-size: 1rem; opacity: 0.95; margin-bottom: 1rem; max-width: 640px; }
+            .sb-logo-badge {
+                width: 42px; height: 42px;
+                border-radius: 13px;
+                display: grid;
+                place-items: center;
+                font-size: 1.2rem;
+                background: linear-gradient(135deg, #4f46e5, #818cf8);
+                box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+                flex-shrink: 0;
+            }
+            .sb-logo-title { font-weight: 750; font-size: 1rem; color: #ffffff; line-height: 1.2; }
+            .sb-logo-sub { font-size: 0.74rem; color: #94a3b8; }
 
-            .pill-row { display: flex; flex-wrap: wrap; gap: 0.55rem; position: relative; z-index: 1; }
-            .pill {
-                background: rgba(255,255,255,0.16);
-                border: 1px solid rgba(255,255,255,0.28);
+            div[data-testid="stVerticalBlock"] .app-sidebar .stButton > button {
+                width: 100%;
+                text-align: left;
+                justify-content: flex-start;
+                background: transparent !important;
+                color: #cbd5e1 !important;
+                box-shadow: none !important;
+                border: 1px solid transparent !important;
+                border-radius: 12px !important;
+                font-weight: 600 !important;
+                padding: 0.6rem 0.8rem !important;
+                margin-bottom: 0.2rem;
+            }
+            div[data-testid="stVerticalBlock"] .app-sidebar .stButton > button:hover {
+                background: rgba(255,255,255,0.06) !important;
+                transform: none;
+            }
+            div[data-testid="stVerticalBlock"] .app-sidebar .stButton > button:disabled {
+                color: #4b5573 !important;
+                cursor: default;
+            }
+            .nav-active > button {
+                background: linear-gradient(135deg, #4f46e5, #6d5bf0) !important;
+                color: white !important;
+                box-shadow: 0 10px 22px rgba(79, 70, 229, 0.35) !important;
+            }
+            .nav-soon {
+                font-size: 0.62rem;
+                font-weight: 700;
+                color: #64748b;
+                background: rgba(255,255,255,0.06);
                 border-radius: 999px;
-                padding: 0.4rem 0.85rem;
-                font-size: 0.86rem;
-                font-weight: 600;
-                backdrop-filter: blur(10px);
+                padding: 0.1rem 0.5rem;
+                display: inline-block;
+                margin: -0.35rem 0 0.35rem 0.9rem;
+            }
+
+            /* ---------- Header ---------- */
+            .greeting-row h1 { font-size: 1.55rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em; }
+            .greeting-row p { color: #64748b; margin: 0.15rem 0 0 0; font-size: 0.95rem; }
+
+            /* ---------- Hero banner ---------- */
+            .hero-banner {
+                position: relative;
+                border-radius: 26px;
+                overflow: hidden;
+                min-height: 260px;
+                margin: 1.1rem 0 1.3rem 0;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 25px 55px rgba(30, 41, 89, 0.18);
+                background-image:
+                    linear-gradient(115deg, rgba(30,27,110,0.86) 0%, rgba(56,60,150,0.55) 45%, rgba(20,30,60,0.15) 100%),
+                    url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1740&auto=format&fit=crop');
+                background-size: cover;
+                background-position: center;
+            }
+            .hero-banner-inner { padding: 2.1rem 2.3rem; position: relative; z-index: 1; max-width: 560px; }
+            .hero-banner h2 { color: white; font-size: 2rem; font-weight: 800; margin: 0 0 0.5rem 0; letter-spacing: -0.02em; }
+            .hero-banner p { color: rgba(255,255,255,0.92); font-size: 1rem; margin-bottom: 1.1rem; }
+            .hero-cta {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4rem;
+                background: white;
+                color: #3730a3;
+                font-weight: 750;
+                padding: 0.65rem 1.2rem;
+                border-radius: 12px;
+                text-decoration: none;
+                font-size: 0.92rem;
+                box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+            }
+
+            /* ---------- Stat tiles ---------- */
+            .stat-tile-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.85rem;
+                margin-bottom: 1.3rem;
+            }
+            .stat-tile {
+                background: white;
+                border: 1px solid rgba(15, 23, 42, 0.06);
+                border-radius: 18px;
+                padding: 1rem 1.1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+            }
+            .stat-tile-icon {
+                width: 44px; height: 44px;
+                border-radius: 13px;
+                display: grid;
+                place-items: center;
+                font-size: 1.15rem;
+                flex-shrink: 0;
+            }
+            .stat-tile-value { font-size: 1.3rem; font-weight: 800; color: #0f172a; line-height: 1.1; }
+            .stat-tile-label { font-size: 0.82rem; color: #0f172a; font-weight: 650; }
+            .stat-tile-sub { font-size: 0.74rem; color: #94a3b8; }
+
+            @media (max-width: 1100px) {
+                .stat-tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             }
 
             /* ---------- Generic cards ---------- */
             .card {
-                background: rgba(255,255,255,0.97);
+                background: rgba(255,255,255,0.98);
                 border: 1px solid rgba(15, 23, 42, 0.06);
                 border-radius: 20px;
                 padding: 1.3rem 1.4rem;
@@ -135,7 +240,7 @@ def inject_css() -> None:
                 animation: fadeUp 0.5s ease both;
             }
 
-            .form-card { padding: 1.3rem 1.4rem; border-radius: 24px; }
+            .form-card { padding: 1.4rem 1.5rem; border-radius: 24px; }
 
             .card h3, .section-title {
                 margin-top: 0;
@@ -150,6 +255,46 @@ def inject_css() -> None:
 
             .card p, .card li, .card td { color: #334155; line-height: 1.65; }
             .card ul { padding-left: 1.1rem; margin-bottom: 0; }
+
+            /* ---------- Destination quick-picks ---------- */
+            .quickpick-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.2rem; }
+            div[data-testid="column"] .quickpick-btn > button {
+                width: 100%;
+                border-radius: 14px !important;
+                background: #f8fafc !important;
+                color: #0f172a !important;
+                border: 1px solid rgba(15,23,42,0.08) !important;
+                box-shadow: none !important;
+                font-weight: 650 !important;
+                padding: 0.6rem 0.5rem !important;
+            }
+            .quickpick-selected > button {
+                background: linear-gradient(135deg, #4f46e5, #6d5bf0) !important;
+                color: white !important;
+                border: none !important;
+                box-shadow: 0 10px 22px rgba(79, 70, 229, 0.3) !important;
+            }
+
+            /* ---------- Tips ---------- */
+            .tip-item {
+                display: flex;
+                gap: 0.8rem;
+                align-items: flex-start;
+                padding: 0.65rem 0.2rem;
+                border-bottom: 1px solid rgba(15,23,42,0.05);
+            }
+            .tip-item:last-child { border-bottom: none; }
+            .tip-icon {
+                width: 38px; height: 38px;
+                border-radius: 11px;
+                background: #f5f3ff;
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+                font-size: 1rem;
+            }
+            .tip-title { font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+            .tip-sub { font-size: 0.8rem; color: #64748b; }
 
             /* ---------- Destination hero (post-generation) ---------- */
             .dest-hero {
@@ -185,10 +330,10 @@ def inject_css() -> None:
             }
             .metric-card {
                 background: linear-gradient(160deg, #ffffff, #f5f8ff);
-                border: 1px solid rgba(52, 112, 255, 0.14);
+                border: 1px solid rgba(79, 70, 229, 0.14);
                 border-radius: 16px;
                 padding: 0.9rem 0.95rem;
-                box-shadow: 0 8px 22px rgba(52, 112, 255, 0.07);
+                box-shadow: 0 8px 22px rgba(79, 70, 229, 0.07);
             }
             .metric-label {
                 font-size: 0.74rem;
@@ -218,17 +363,32 @@ def inject_css() -> None:
                 border: 1px solid rgba(0,0,0,0.04);
             }
 
-            /* ---------- Timeline / day cards ---------- */
-            .day-chip {
-                display: inline-block;
-                background: linear-gradient(135deg, #2563eb, #3b82f6);
-                color: white;
-                border-radius: 10px;
-                padding: 0.2rem 0.65rem;
-                font-weight: 750;
-                font-size: 0.82rem;
-                margin-right: 0.5rem;
+            /* ---------- CTA banner ---------- */
+            .cta-banner {
+                background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+                border: 1px solid rgba(79, 70, 229, 0.14);
+                border-radius: 22px;
+                padding: 1.2rem 1.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                flex-wrap: wrap;
+                margin-bottom: 1.2rem;
             }
+            .cta-left { display: flex; align-items: center; gap: 0.9rem; }
+            .cta-icon {
+                width: 46px; height: 46px;
+                border-radius: 14px;
+                background: linear-gradient(135deg, #4f46e5, #6d5bf0);
+                display: grid;
+                place-items: center;
+                font-size: 1.2rem;
+                color: white;
+                flex-shrink: 0;
+            }
+            .cta-title { font-weight: 750; color: #0f172a; font-size: 1rem; }
+            .cta-sub { color: #64748b; font-size: 0.85rem; }
 
             /* ---------- Empty state ---------- */
             .empty-state {
@@ -247,16 +407,16 @@ def inject_css() -> None:
 
             /* ---------- Inputs ---------- */
             .stButton > button {
-                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                background: linear-gradient(135deg, #4f46e5, #6d5bf0);
                 color: white;
                 border: none;
                 border-radius: 14px;
                 padding: 0.75rem 1rem;
                 font-weight: 750;
-                box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
+                box-shadow: 0 10px 24px rgba(79, 70, 229, 0.24);
                 transition: transform 160ms ease, box-shadow 160ms ease;
             }
-            .stButton > button:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(37, 99, 235, 0.26); }
+            .stButton > button:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(79, 70, 229, 0.28); }
 
             div[data-testid="stTextInput"] > div > div > input,
             div[data-testid="stTextArea"] > div > div > textarea,
@@ -271,8 +431,8 @@ def inject_css() -> None:
             div[data-testid="stTextInput"] > div > div > input:focus,
             div[data-testid="stTextArea"] > div > div > textarea:focus,
             div[data-testid="stNumberInput"] > div > div > input:focus {
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
             }
 
             .stDownloadButton > button {
@@ -299,7 +459,7 @@ def inject_css() -> None:
                 color: #475569;
             }
             .stTabs [aria-selected="true"] {
-                background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+                background: linear-gradient(135deg, #4f46e5, #6d5bf0) !important;
                 color: white !important;
             }
 
@@ -319,22 +479,67 @@ def inject_css() -> None:
 
 
 # --------------------------------------------------------------------------
+# Sidebar (only "Plan New Trip" is a real, working destination — the rest
+# of the app is a single flow, so the other nav items are intentionally
+# shown as disabled / "Soon" rather than faked as working pages)
+# --------------------------------------------------------------------------
+def render_sidebar() -> None:
+    st.markdown('<div class="app-sidebar">', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="sb-logo">
+            <div class="sb-logo-badge">🧳</div>
+            <div>
+                <div class="sb-logo-title">AI Travel Planner</div>
+                <div class="sb-logo-sub">Your smart travel companion ✈</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="nav-active">', unsafe_allow_html=True)
+    st.button("✨  Plan New Trip", disabled=True, use_container_width=True, key="nav_plan")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    other_nav = [
+        ("🗂", "My Trips"),
+        ("📍", "Destinations"),
+        ("🗓", "Itinerary"),
+        ("💼", "Budget Planner"),
+        ("📖", "Travel Guide"),
+        ("⚙️", "Settings"),
+    ]
+    for icon, label in other_nav:
+        st.button(f"{icon}  {label}", disabled=True, use_container_width=True, key=f"nav_{label}")
+        st.markdown('<div class="nav-soon">SOON</div>', unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# --------------------------------------------------------------------------
 # Header
 # --------------------------------------------------------------------------
 def render_header() -> None:
     st.markdown(
         """
-        <div class="hero-shell">
-            <h1>🧳 AI Travel Planner</h1>
-            <p>Plan personalized trips with a multi-agent AI system that blends destinations,
-            hotels, weather, flights, attractions, and day-wise itineraries into one seamless
-            experience.</p>
-            <div class="pill-row">
-                <span class="pill">📍 Destinations</span>
-                <span class="pill">🏨 Hotels</span>
-                <span class="pill">🌤 Weather</span>
-                <span class="pill">✈ Flights</span>
-                <span class="pill">🗺 Itinerary</span>
+        <div class="greeting-row">
+            <h1>Welcome 👋</h1>
+            <p>Where are we planning your next adventure?</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_hero_banner() -> None:
+    st.markdown(
+        """
+        <div class="hero-banner">
+            <div class="hero-banner-inner">
+                <h2>Explore. Dream. Discover.</h2>
+                <p>AI-powered travel planning made simple and personalized.</p>
+                <a class="hero-cta" href="#trip-form">Plan Your Trip ✨</a>
             </div>
         </div>
         """,
@@ -342,31 +547,60 @@ def render_header() -> None:
     )
 
 
+def render_stats_row() -> None:
+    """Small stat tiles built only from real, session-derived values —
+    no fabricated aggregate numbers."""
+    last_meta = st.session_state.get("last_meta") or {}
+    stats = [
+        ("🧭", "#eef2ff", st.session_state.get("plans_generated", 0), "Plans Generated", "This session"),
+        ("📍", "#ecfdf5", last_meta.get("destination", "—"), "Last Destination", "Most recent plan"),
+        ("💰", "#fffbeb", f"₹{st.session_state.get('budget', 0):,}", "Budget Set", "Current form value"),
+        ("👥", "#fdf2f8", st.session_state.get("travelers", 1), "Travelers", "Current form value"),
+    ]
+    st.markdown('<div class="stat-tile-grid">', unsafe_allow_html=True)
+    for icon, bg, value, label, sub in stats:
+        st.markdown(
+            f"""
+            <div class="stat-tile">
+                <div class="stat-tile-icon" style="background:{bg};">{icon}</div>
+                <div>
+                    <div class="stat-tile-value">{value}</div>
+                    <div class="stat-tile-label">{label}</div>
+                    <div class="stat-tile-sub">{sub}</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
 # --------------------------------------------------------------------------
-# Left column — input form (all backend wiring unchanged)
+# Trip form (all backend wiring unchanged — session-state keys identical)
 # --------------------------------------------------------------------------
 def render_trip_form() -> bool:
     """Render the trip details card and return whether generation was requested."""
+    defaults = {
+        "destination": "",
+        "departure_city": "",
+        "start_date": None,
+        "end_date": None,
+        "budget": 50000,
+        "travelers": 1,
+        "destination_type": "city",
+        "trip_type": "domestic",
+        "interests": "",
+        "use_structured": True,
+        "free_text": "",
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
+    st.markdown('<div id="trip-form"></div>', unsafe_allow_html=True)
     with st.container():
         st.markdown('<div class="card form-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">📍 Trip Details</div>', unsafe_allow_html=True)
-
-        defaults = {
-            "destination": "",
-            "departure_city": "",
-            "start_date": None,
-            "end_date": None,
-            "budget": 50000,
-            "travelers": 1,
-            "destination_type": "city",
-            "trip_type": "domestic",
-            "interests": "",
-            "use_structured": True,
-            "free_text": "",
-        }
-        for key, value in defaults.items():
-            if key not in st.session_state:
-                st.session_state[key] = value
+        st.markdown('<div class="section-title">✨ Plan a New Trip</div>', unsafe_allow_html=True)
 
         col1, col2 = st.columns(2)
         with col1:
@@ -385,11 +619,8 @@ def render_trip_form() -> bool:
             )
             st.date_input("📅 Return Date", key="end_date")
 
-        st.selectbox(
-            "🏕 Destination Type",
-            ["city", "beach", "mountain", "adventure", "wildlife", "spiritual", "desert"],
-            key="destination_type",
-        )
+        render_destination_quickpicks()
+
         st.selectbox("🌎 Trip Type", ["domestic", "international"], key="trip_type")
         st.text_input(
             "❤️ Interests", key="interests",
@@ -410,6 +641,23 @@ def render_trip_form() -> bool:
         return generate
 
 
+def render_destination_quickpicks() -> None:
+    """Quick-select chips that set the same destination_type used by the form."""
+    st.markdown('<div class="metric-label" style="margin-top:0.2rem;">🏕 Destination Type</div>', unsafe_allow_html=True)
+    options = list(DESTINATION_THEME.keys())
+    cols = st.columns(len(options))
+    for col, option in zip(cols, options):
+        _, _, icon = DESTINATION_THEME[option]
+        selected = st.session_state.destination_type == option
+        css_class = "quickpick-selected" if selected else "quickpick-btn"
+        with col:
+            st.markdown(f'<div class="{css_class}">', unsafe_allow_html=True)
+            if st.button(f"{icon}\n{option.title()}", key=f"quickpick_{option}", use_container_width=True):
+                st.session_state.destination_type = option
+                st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
+
+
 def render_interest_badges(interests_text: str) -> None:
     """Render colored badges for whatever interests the user has typed so far."""
     items = [i.strip() for i in interests_text.split(",") if i.strip()]
@@ -423,6 +671,46 @@ def render_interest_badges(interests_text: str) -> None:
         )
     html.append("</div>")
     st.markdown("".join(html), unsafe_allow_html=True)
+
+
+def render_tips_panel() -> None:
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">💡 Smart Travel Tips</div>', unsafe_allow_html=True)
+    for icon, title, sub in GENERIC_TRAVEL_TIPS:
+        st.markdown(
+            f"""
+            <div class="tip-item">
+                <div class="tip-icon">{icon}</div>
+                <div>
+                    <div class="tip-title">{title}</div>
+                    <div class="tip-sub">{sub}</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+def render_cta_banner() -> None:
+    st.markdown(
+        """
+        <div class="cta-banner">
+            <div class="cta-left">
+                <div class="cta-icon">✨</div>
+                <div>
+                    <div class="cta-title">Let AI create your perfect itinerary</div>
+                    <div class="cta-sub">Fill in your trip details and get a personalized, day-by-day plan.</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<a class="hero-cta" style="background:#0f172a;color:white;" href="#trip-form">Start Planning Now ✨</a>',
+        unsafe_allow_html=True,
+    )
 
 
 def build_user_input() -> str:
@@ -557,7 +845,7 @@ def get_packing_checklist(destination_type: str, trip_type: str) -> list[str]:
 
 
 # --------------------------------------------------------------------------
-# Right column — results
+# Results
 # --------------------------------------------------------------------------
 def render_metrics(meta: dict) -> None:
     metrics = [
@@ -690,6 +978,7 @@ def render_tips_tab(response: str) -> None:
 def render_result_sections(response: str) -> None:
     st.markdown('<div class="section-title" style="font-size:1.3rem;">📋 Your Travel Plan</div>', unsafe_allow_html=True)
     meta = get_trip_meta(response)
+    st.session_state.last_meta = meta
 
     tab_overview, tab_itinerary, tab_budget, tab_hotels, tab_food, tab_tips = st.tabs(
         ["🌍 Overview", "🗓 Itinerary", "💰 Budget", "🏨 Hotels", "🍜 Food", "💡 Tips"]
@@ -722,7 +1011,7 @@ def build_pdf(response: str) -> bytes | None:
         topMargin=22 * mm, bottomMargin=18 * mm, leftMargin=18 * mm, rightMargin=18 * mm,
     )
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle("TitleX", parent=styles["Title"], textColor=rl_colors.HexColor("#1c3ca2"))
+    title_style = ParagraphStyle("TitleX", parent=styles["Title"], textColor=rl_colors.HexColor("#3730a3"))
     h_style = ParagraphStyle("HeadingX", parent=styles["Heading2"], textColor=rl_colors.HexColor("#0f172a"), spaceBefore=14)
     body_style = ParagraphStyle("BodyX", parent=styles["BodyText"], leading=16)
     bullet_style = ParagraphStyle("BulletX", parent=styles["BodyText"], leading=15, leftIndent=12)
@@ -768,28 +1057,35 @@ def run_pipeline_with_status(user_input: str) -> str:
     thread = threading.Thread(target=worker, daemon=True)
     thread.start()
 
-    messages = [
-        "🧠 Selecting destination...",
-        "🏨 Finding hotels...",
-        "🌦 Checking weather...",
-        "📍 Discovering attractions...",
-        "✈ Searching flights...",
-        "📅 Building itinerary...",
+    pipeline_steps = [
+        "Selecting destination",
+        "Finding hotels",
+        "Checking weather",
+        "Discovering attractions",
+        "Searching flights",
+        "Building itinerary",
     ]
+    step_icons = ["🧠", "🏨", "🌦", "📍", "✈", "📅"]
 
-    with st.spinner("Crafting your itinerary..."):
-        status_placeholder = st.empty()
+    with st.spinner(""):
+        pipeline_placeholder = st.empty()
         progress_bar = st.progress(0)
         step = 0
+        start_time = time.time()
+
         while not done.is_set():
-            message = messages[step % len(messages)]
-            status_placeholder.info(message)
-            progress_bar.progress(min(95, (step + 1) * (100 // len(messages))))
+            active_index = step % len(pipeline_steps)
+            elapsed = time.time() - start_time
+            render_pipeline_status(pipeline_placeholder, pipeline_steps, step_icons, active_index, elapsed)
+            progress_bar.progress(min(95, (step + 1) * (100 // len(pipeline_steps))))
             step += 1
             time.sleep(0.8)
-        progress_bar.progress(100)
 
-    status_placeholder.empty()
+        render_pipeline_status(pipeline_placeholder, pipeline_steps, step_icons, len(pipeline_steps), time.time() - start_time)
+        progress_bar.progress(100)
+        time.sleep(0.4)
+
+    pipeline_placeholder.empty()
     progress_bar.empty()
 
     if "error" in response_holder:
@@ -798,21 +1094,70 @@ def run_pipeline_with_status(user_input: str) -> str:
     return response_holder.get("response", "")
 
 
+def render_pipeline_status(placeholder, steps: list[str], icons: list[str], active_index: int, elapsed: float) -> None:
+    rows = []
+    for i, (label, icon) in enumerate(zip(steps, icons)):
+        if i < active_index:
+            rows.append(f"<div class='tip-item'><div class='tip-icon' style='background:#ecfdf5;'>✅</div><div><div class='tip-title'>{label}</div><div class='tip-sub'>Done</div></div></div>")
+        elif i == active_index:
+            rows.append(f"<div class='tip-item'><div class='tip-icon' style='background:#eef2ff;'>{icon}</div><div><div class='tip-title'>{label}...</div><div class='tip-sub'>In progress</div></div></div>")
+        else:
+            rows.append(f"<div class='tip-item'><div class='tip-icon' style='background:#f8fafc;color:#94a3b8;'>{icon}</div><div><div class='tip-title' style='color:#94a3b8;'>{label}</div><div class='tip-sub'>Pending</div></div></div>")
+
+    placeholder.markdown(
+        f"""
+        <div class="card">
+            <div class="section-title">🧠 Crafting Your Itinerary <span style="margin-left:auto;font-weight:600;font-size:0.8rem;color:#64748b;">{elapsed:.0f}s elapsed</span></div>
+            {''.join(rows)}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 # --------------------------------------------------------------------------
 # Main
 # --------------------------------------------------------------------------
 inject_css()
-render_header()
 
 if "last_response" not in st.session_state:
     st.session_state.last_response = ""
+if "plans_generated" not in st.session_state:
+    st.session_state.plans_generated = 0
+if "last_meta" not in st.session_state:
+    st.session_state.last_meta = None
 
-left_col, right_col = st.columns([0.95, 1.05], gap="large")
+sidebar_col, main_col = st.columns([0.22, 0.78], gap="large")
 
-with left_col:
+with sidebar_col:
+    render_sidebar()
+
+with main_col:
+    render_header()
+    render_hero_banner()
+    render_stats_row()
+
     generate = render_trip_form()
+    render_tips_panel()
 
-with right_col:
+    if generate:
+        user_input = build_user_input().strip()
+
+        if not user_input:
+            st.warning("Please enter your travel requirements before generating a plan.")
+        else:
+            response = None
+            try:
+                response = run_pipeline_with_status(user_input)
+            except Exception as exc:
+                st.error(f"Something went wrong while generating your plan:\n\n{exc}")
+
+            if response:
+                st.session_state.last_response = response
+                st.session_state.plans_generated += 1
+                st.success("Your personalized travel plan is ready! 🎉")
+                st.rerun()
+
     if st.session_state.last_response:
         render_result_sections(st.session_state.last_response)
     else:
@@ -821,55 +1166,40 @@ with right_col:
             <div class="empty-state">
                 <div class="empty-icon">✈️</div>
                 <h3>Ready for your next adventure?</h3>
-                <p>Fill in your trip details on the left, hit generate, and watch a beautifully
+                <p>Fill in your trip details above, hit generate, and watch a beautifully
                 crafted itinerary come to life here.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-if generate:
-    user_input = build_user_input().strip()
+    render_cta_banner()
 
-    if not user_input:
-        st.warning("Please enter your travel requirements before generating a plan.")
-    else:
-        response = None
-        try:
-            response = run_pipeline_with_status(user_input)
-        except Exception as exc:
-            st.error(f"Something went wrong while generating your plan:\n\n{exc}")
+    if st.session_state.last_response:
+        st.markdown("### 📥 Export Your Plan")
+        export_col1, export_col2 = st.columns(2)
 
-        if response:
-            st.session_state.last_response = response
-            st.success("Your personalized travel plan is ready! 🎉")
-            st.rerun()
-
-if st.session_state.last_response:
-    st.markdown("### 📥 Export Your Plan")
-    export_col1, export_col2 = st.columns(2)
-
-    with export_col1:
-        st.download_button(
-            label="⬇ Download as .txt",
-            data=st.session_state.last_response,
-            file_name="travel_plan.txt",
-            mime="text/plain",
-            use_container_width=True,
-        )
-
-    with export_col2:
-        pdf_bytes = build_pdf(st.session_state.last_response)
-        if pdf_bytes:
+        with export_col1:
             st.download_button(
-                label="⬇ Download as PDF",
-                data=pdf_bytes,
-                file_name="travel_plan.pdf",
-                mime="application/pdf",
+                label="⬇ Download as .txt",
+                data=st.session_state.last_response,
+                file_name="travel_plan.txt",
+                mime="text/plain",
                 use_container_width=True,
             )
-        else:
-            st.info("Install `reportlab` (`pip install reportlab`) to enable PDF export.")
 
-st.markdown("---")
-st.caption("Powered by your multi-agent travel research pipeline.")
+        with export_col2:
+            pdf_bytes = build_pdf(st.session_state.last_response)
+            if pdf_bytes:
+                st.download_button(
+                    label="⬇ Download as PDF",
+                    data=pdf_bytes,
+                    file_name="travel_plan.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+            else:
+                st.info("Install `reportlab` (`pip install reportlab`) to enable PDF export.")
+
+    st.markdown("---")
+    st.caption("Powered by your multi-agent travel research pipeline.")
